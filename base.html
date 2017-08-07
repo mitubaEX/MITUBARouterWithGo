@@ -1,15 +1,122 @@
 {{define "base"}}<!doctype html>
-<html>
-<head>
-<meta charset="utf-8"/>
-<title>hello</title>
-</head>
-<body>
-<div class="content">
-<h1>hello</h1>
-<hr/>
-<div>
-</div>
-</div>
-</body>
-</html>{{end}}
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>MITUBA</title>
+        <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
+        <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>
+
+        <link rel="stylesheet" href="public/css/main.css"></link>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+        <script>
+                jQuery(function($){
+                    $("#searchResultTable").DataTable({
+                        order: [ [ 6, "desc" ] ],
+                        bStateSave:true,
+                        searching: false
+                    });
+                });
+        </script>
+        <style type="text/css">
+                div.container {
+                    width: 100%;
+                }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div align="center">
+                <h1>MITUBA</h1>
+            </div>
+        </header>
+        <h2>ファイルを投げて検索をする</h2>
+        <p>classファイルかjarファイルを送信してください</p>
+        <div align="left">
+            <h5><span>0</span></h5>
+        </div>
+
+        <div align="center">
+            <div style="padding: 10px; margin-bottom: 10px; border: 5px double #333333;background-color: #ffff99;width: 60%;height: 50%">
+                <div class="uploadButton">
+                    ファイルを選択
+                    <input type="file" onchange="uv.style.display='inline-block'; uv.value=this.value;" id="file" name="file" />
+                    <input type="text" id="uv" class="uploadValue" disabled="disabled" />
+                </div>
+                <h3>検索バースマーク</h3>
+                <div class="select-box01">
+                    <select name="birthmark" id="birthmark">
+                        <option value="2-gram">2-gram</option>
+                        <option value="3-gram">3-gram</option>
+                        <option value="4-gram">4-gram</option>
+                        <option value="5-gram">5-gram</option>
+                        <option value="6-gram">6-gram</option>
+                        <option value="uc">uc</option>
+                    </select>
+                </div>
+                <div class="select-box01">
+                    <h3>閾値</h3>
+                    <select name="threshold" id="threshold">
+                        <option value="0.75">0.75</option>
+                        <option value="0.5">0.5</option>
+                        <option value="0.25">0.25</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+
+            <!-- 入力する値の項目 -->
+            <!-- ajax()を実行するボタン -->
+        <div align="center">
+            <button data-btn-type="search" style="width: 30%;height: 80px;font-size: 1.4em;font-weight: bold;border: solid 3px;">search!</button>
+        </div>
+        <br/><br/>
+        <h3>結果</h3>
+            <!-- 結果表示用のdivタグ -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="public/javascript/server_connect.js"></script>
+            <!-- <script type="text/javascript" src="api2.js"></script> -->
+
+        <!-- ローカルストレージに保存しつつhiddenにぶち込む，その後downloadボタン押してhiddenの値投げてファイルをもらう．-->
+        <form method="POST" action="/download">
+            <input type="hidden" id="searchResult" name="searchResult"/>
+            <div align="right">
+                <button type="submit" class="btn btn-default">検索結果をダウンロード</button>
+            </div>
+        </form>
+        <div class="container">
+            <div class="table-responsive">
+                <table id="searchResultTable" class="table table-striped" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>検索ファイル名</th>
+                            <th>検索結果ファイル名</th>
+                            <th>groupID</th>
+                            <th>artifactID</th>
+                            <th>version</th>
+                            <th>jarファイル名</th>
+                            <th>類似度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </body>
+</html>
+{{end}}

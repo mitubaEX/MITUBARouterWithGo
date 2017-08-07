@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -14,27 +15,19 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
-func index(c web.C, w http.ResponseWriter, r *http.Request) {
-	// tmpl := template.Must(template.ParseFiles("template.html"))
-	// dir, _ := os.Getwd()
-	// tmpl := template.Must(template.ParseFiles(filepath.Join(dir, "templates", "template.html")))
-	// // テンプレートからテキストを生成して, os.Stdoutへ出力
-	// err := tmpl.Execute(os.Stdout, nil)
-	// if err != nil {
-	// 	panic(err)
-	// }
+type PostData struct {
+	birthmark string `json:"birthmark"`
+	threshold string `json:"threshold"`
+	file      byte   `json:"file"`
+}
 
+func index(c web.C, w http.ResponseWriter, r *http.Request) {
 	funcMap := template.FuncMap{
 		"safehtml": func(text string) template.HTML { return template.HTML(text) },
 	}
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFiles("./src/helloworld/base.html"))
-	// dat := struct {
-	// 	Title string
-	// 	Body  string
-	// }{
-	// 	Title: r.FormValue("title"),
-	// 	Body:  r.FormValue("body"),
-	// }
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFiles("./base.html"))
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
 	err := templates.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -53,14 +46,13 @@ func hello_post(c web.C, w http.ResponseWriter, r *http.Request) {
 func file(c web.C, w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20)
 
+	// file copy
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	defer file.Close()
-
-	fmt.Fprintf(w, "%v\n", handler.Header)
 
 	f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
@@ -70,11 +62,13 @@ func file(c web.C, w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 	io.Copy(f, file)
 
+	// text value get
 	birthmark := r.FormValue("birthmark")
-	fmt.Fprintf(w, "%s\n", birthmark)
+	fmt.Printf(birthmark)
 	threshold := r.FormValue("threshold")
-	fmt.Fprintf(w, "%s\n", threshold)
+	fmt.Printf(threshold)
 
+	// request
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("file", filepath.Base("./test/"+handler.Filename))
@@ -95,31 +89,14 @@ func file(c web.C, w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	fmt.Fprintf(w, "%s\n", resp)
 	defer resp.Body.Close()
 
-	// values := url.Values{}
-	// values.Add("birthmark", birthmark)
-	// values.Add("threshold", threshold)
-	// values.Set("file", file)
-	//
-	// req, err := http.NewRequest(
-	// 	"POST",
-	// 	"http://localhost:9001/upload",
-	// 	strings.NewReader(values.Encode()),
-	// )
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	//
-	// req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	// client := &http.Client{}
-	// resp, err := client.Do(req)
-	// if err != nil {
-	// }
-	// defer resp.Body.Close()
-
+	// respose write
+	b, err := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		fmt.Println(string(b))
+		fmt.Fprintf(w, "%s\n", string(b))
+	}
 }
 
 func main() {
