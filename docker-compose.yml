@@ -1,0 +1,9 @@
+goapp:
+    image: golang
+    ports:
+        - "8000:8000"
+    tty: true
+    volumes:
+        - ./goapp:/go
+    command: bash -c "cd /go && sh install.sh && go run main.go"
+
