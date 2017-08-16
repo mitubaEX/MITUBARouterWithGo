@@ -43,7 +43,6 @@ func index(c web.C, w http.ResponseWriter, r *http.Request) {
 		"safehtml": func(text string) template.HTML { return template.HTML(text) },
 	}
 	templates := template.Must(template.New("").Funcs(funcMap).ParseFiles("./base.html"))
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
 	err := templates.ExecuteTemplate(w, "base", nil)
 	if err != nil {
@@ -149,6 +148,7 @@ func file(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 	goji.Get("/", index)
 	goji.Get("/hello/:name", hello)
 	goji.Post("/hello", hello_post)
