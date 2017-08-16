@@ -1,3 +1,17 @@
+var table;
+
+
+$(document).ready(function(){
+    table = $('#searchResultTable').DataTable({
+        stateSave: true,
+        searching: false,
+        columnDefs: [
+            { width: 200, targets: 1 }
+        ]
+    });
+});
+
+
 $(function() {
     //  searchボタンが押された時
     $('body').on('click', 'button[data-btn-type=search]', function(e) {
@@ -29,27 +43,47 @@ $(function() {
             console.log( res.toString());
             console.log(JSON.parse(res.toString()));
 
-            var tableHeaderRowCount = 1;
-            var table = document.getElementById('searchResultTable');
-            var rowCount = table.rows.length;
-            for (var i = tableHeaderRowCount; i < rowCount; i++) {
-                table.deleteRow(tableHeaderRowCount);
-            }
-            var items = [];
-            $.each(JSON.parse(res.toString()), function (key, val) {
-                items.push("<tr>");
-                items.push("<td id=''"+key+"''>"+val.postedClassFile+"</td>");
-                items.push("<td id=''"+key+"''>"+val.resultClassFile+"</td>");
-                items.push("<td id=''"+key+"''>"+val.jar+"</td>");
-                items.push("<td id=''"+key+"''>"+val.groupId+"</td>");
-                items.push("<td id=''"+key+"''>"+val.artifactId+"</td>");
-                items.push("<td id=''"+key+"''>"+val.version+"</td>");
-                items.push("<td id=''"+key+"''>"+val.sim+"</td>");
-                items.push("</tr>");
+            table.destroy();
+
+            table = $('#searchResultTable').DataTable({
+                data: JSON.parse(res.toString()),
+                columns: [
+                    { data: 'postedClassFile' },
+                    { data: 'resultClassFile' },
+                    { data: 'jar' },
+                    { data: 'groupId' },
+                    { data: 'artifactId' },
+                    { data: 'version' },
+                    { data: 'sim' }
+                ],
+                searching: false,
+                columnDefs: [
+                    { width: 200, targets: 1 }
+                ]
             });
-            $("<tbody/>", {html: items.join("")}).appendTo("table");
-            localStorage.setItem('searchResult', res.toString());
-            document.getElementById('searchResult').value = res.toString();
+            return true;
+
+            // var tableHeaderRowCount = 1;
+            // var table = document.getElementById('searchResultTable');
+            // var rowCount = table.rows.length;
+            // for (var i = tableHeaderRowCount; i < rowCount; i++) {
+            //     table.deleteRow(tableHeaderRowCount);
+            // }
+            // var items = [];
+            // $.each(JSON.parse(res.toString()), function (key, val) {
+            //     items.push("<tr>");
+            //     items.push("<td id=''"+key+"''>"+val.postedClassFile+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.resultClassFile+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.jar+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.groupId+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.artifactId+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.version+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.sim+"</td>");
+            //     items.push("</tr>");
+            // });
+            // $("<tbody/>", {html: items.join("")}).appendTo("table");
+            // localStorage.setItem('searchResult', res.toString());
+            // document.getElementById('searchResult').value = res.toString();
         }).fail(function(jqXHR, textStatus, errorThrown){
             console.log( 'ERROR', jqXHR, textStatus, errorThrown);
         });
