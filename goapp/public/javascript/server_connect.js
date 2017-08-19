@@ -45,9 +45,11 @@ $(function() {
             $('#searchResult').val(res.toString());
             console.log($('#searchResult').val());
 
+            document.getElementById("searchResultZone").style.display="block";
+
             table.destroy();
 
-            table = $('#searchResultTable').DataTable({
+            table = $('#searchResultTable').removeAttr('width').DataTable({
                 data: JSON.parse(res.toString()),
                 columns: [
                     { data: 'postedClassFile' },
@@ -58,9 +60,22 @@ $(function() {
                     { data: 'version' },
                     { data: 'sim' }
                 ],
-                searching: false
+                searching: false,
+                scrollY:        "300px",
+                scrollX:        true,
+                scrollCollapse: true,
+                paging:         false,
+                columnDefs: [
+                    { width: 200, targets: 0 }
+                ],
+                fixedColumns: true
+                // "scrollY":        "400px",
+                // "scrollCollapse": true,
+                // "paging":         false
+                //
+                // autoWidth: false,
                 // columnDefs: [
-                //     { targets: 1, width: 200 }
+                //     { targets: 1, width: '20%' }
                 // ]
             });
             return true;

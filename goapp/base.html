@@ -6,13 +6,17 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.js"></script>
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.dataTables.min.css">
 
-        <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
+        <!-- <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/> -->
         <!-- <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js"></script>          -->
 
         <link rel="stylesheet" href="public/css/main.css"></link>
         <script src="public/javascript/server_connect.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="//cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
 
         <style type="text/css">
 div.container {
@@ -26,29 +30,27 @@ div.container {
                 <h1>MITUBA</h1>
             </div>
         </header>
-        <h2>ファイルを投げて検索をする</h2>
-        <p>classファイルかjarファイルを送信してください</p>
-        <div align="left">
-            <h5><span>0</span></h5>
-        </div>
+        <br></br>
+        <h2>Please post .class file or .jar file</h2>
+        <!-- <p>classファイルかjarファイルを送信してください</p> -->
+        <br></br>
+        <!-- <div align="left">          -->
+        <!--     <h5><span>0</span></h5> -->
+        <!-- </div>                      -->
 
 
 
 
 
         <div style="float:left;width:15%;">
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
             <div style="padding: 10px; margin-bottom: 10px; border: 5px double #333333;background-color: #ffff99;width: 100%;height: 50%">
                 <div align="center">
                     <div class="uploadButton">
-                        ファイルを選択
+                        select file
                         <input type="file" onchange="uv.style.display='inline-block'; uv.value=this.value;" id="file" name="file" />
                         <input type="text" id="uv" class="uploadValue" disabled="disabled" />
                     </div>
-                    <h3>検索バースマーク</h3>
+                    <h5>select birthmark</h5>
                     <div class="select-box01">
                         <select name="birthmark" id="birthmark">
                             <option value="2-gram">2-gram</option>
@@ -60,7 +62,7 @@ div.container {
                         </select>
                     </div>
                     <div class="select-box01">
-                        <h3>閾値</h3>
+                        <h5>select threshold</h5>
                         <select name="threshold" id="threshold">
                             <option value="0.75">0.75</option>
                             <option value="0.5">0.5</option>
@@ -87,18 +89,18 @@ div.container {
         <div style="float:left;width:5%">
             <br></br>
         </div>
-        <div style="float:left;width:80%">
+        <div style="float:left;width:80%;display:none;" id="searchResultZone">
 
             <div style="float:left;">
                 <div align="left">
-                    <h3>結果</h3>
+                    <h4>search result</h4>
                 </div>
             </div>
             <div style="float:right;">
                 <form method="POST" action="/download">
                     <input type="hidden" id="searchResult" name="searchResult"/>
                     <div align="right">
-                        <button type="submit" class="btn btn-default">検索結果をダウンロード</button>
+                        <button type="submit" class="btn btn-defaul">download as json</button>
                     </div>
                 </form>
             </div>
@@ -111,34 +113,30 @@ div.container {
 
             <!-- ローカルストレージに保存しつつhiddenにぶち込む，その後downloadボタン押してhiddenの値投げてファイルをもらう．-->
             <div style="clear:both;">
-                <div class="container">
-                    <div class="table-responsive">
-                        <table id="searchResultTable" class="display" cellspacing="0" width="100%" data-order='[ [ 6, "desc" ] ]'>
-                            <thead>
-                                <tr>
-                                    <th>検索ファイル名</th>
-                                    <th>検索結果ファイル名</th>
-                                    <th>jarファイル名</th>
-                                    <th>groupID</th>
-                                    <th>artifactID</th>
-                                    <th>version</th>
-                                    <th>類似度</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <table id="searchResultTable" class="stripe row-border order-column" cellspacing="0" width="100%" data-order='[ [ 6, "desc" ] ]'>
+                    <thead>
+                        <tr>
+                            <th>posted class file</th>
+                            <th>resulted class file</th>
+                            <th>name of jar</th>
+                            <th>groupID</th>
+                            <th>artifactID</th>
+                            <th>version</th>
+                            <th>similarity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
