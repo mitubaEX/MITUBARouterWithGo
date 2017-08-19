@@ -36,7 +36,11 @@ div.container {
 
 
 
-        <div style="float:left;width:20%;">
+        <div style="float:left;width:15%;">
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
             <div style="padding: 10px; margin-bottom: 10px; border: 5px double #333333;background-color: #ffff99;width: 100%;height: 50%">
                 <div align="center">
                     <div class="uploadButton">
@@ -73,23 +77,40 @@ div.container {
         </div>
 
 
-            <div style="float:left;width:5%">
-                <br></br>
-                </div>
-            <div style="float:left;width:75%">
+
+
+
+
+
+
+
+        <div style="float:left;width:5%">
+            <br></br>
+        </div>
+            <div style="float:left;width:80%">
+
+                <div style="float:left;">
                 <div align="left">
                     <h3>結果</h3>
                 </div>
-                <!-- 結果表示用のdivタグ -->
-                <!-- <script type="text/javascript" src="api2.js"></script> -->
-
-                <!-- ローカルストレージに保存しつつhiddenにぶち込む，その後downloadボタン押してhiddenの値投げてファイルをもらう．-->
+                </div>
+                <div style="float:right;">
                 <form method="POST" action="/download">
                     <input type="hidden" id="searchResult" name="searchResult"/>
                     <div align="right">
                         <button type="submit" class="btn btn-default">検索結果をダウンロード</button>
                     </div>
                 </form>
+                </div>
+
+
+
+
+                <!-- 結果表示用のdivタグ -->
+                <!-- <script type="text/javascript" src="api2.js"></script> -->
+
+                <!-- ローカルストレージに保存しつつhiddenにぶち込む，その後downloadボタン押してhiddenの値投げてファイルをもらう．-->
+                <div style="clear:both;">
                 <div class="container">
                     <div class="table-responsive">
                         <table id="searchResultTable" class="display" cellspacing="0" width="100%" data-order='[ [ 6, "desc" ] ]'>
@@ -118,6 +139,7 @@ div.container {
                         </table>
                     </div>
                 </div>
+            </div>
             </div>
 
     </body>

@@ -56,10 +56,10 @@ $(function() {
                     { data: 'version' },
                     { data: 'sim' }
                 ],
-                searching: false,
-                columnDefs: [
-                    { width: 200, targets: 1 }
-                ]
+                searching: false
+                // columnDefs: [
+                //     { targets: 1, width: 200 }
+                // ]
             });
             return true;
 
