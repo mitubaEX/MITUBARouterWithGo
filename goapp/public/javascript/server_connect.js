@@ -42,6 +42,8 @@ $(function() {
             console.log( 'SUCCESS', res);
             console.log( res.toString());
             console.log(JSON.parse(res.toString()));
+            $('#searchResult').val(res.toString());
+            console.log($('#searchResult').val());
 
             table.destroy();
 

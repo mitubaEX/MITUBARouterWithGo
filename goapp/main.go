@@ -147,11 +147,26 @@ func file(c web.C, w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "[%s]\n", strings.Join(jsonStrings[:], ","))
 }
 
+func download(c web.C, w http.ResponseWriter, r *http.Request) {
+	searchResult := r.FormValue("searchResult")
+	// fmt.Fprintf(w, "%s\n", searchResult)
+	out := []byte(searchResult)
+	// ファイル名
+	w.Header().Set("Content-Disposition", "attachment; filename=result.json")
+	// コンテントタイプ
+	w.Header().Set("Content-Type", "application/json")
+	// ファイルの長さ
+	w.Header().Set("Content-Length", string(len(out)))
+	// bodyに書き込み
+	w.Write(out)
+}
+
 func main() {
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 	goji.Get("/", index)
 	goji.Get("/hello/:name", hello)
 	goji.Post("/hello", hello_post)
 	goji.Post("/file", file)
+	goji.Post("/download", download)
 	goji.Serve()
 }
