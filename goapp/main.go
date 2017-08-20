@@ -26,6 +26,7 @@ type SearchResult struct {
 	version         string
 	postedClassFile string
 	jar             string
+	birthmarkData   string
 }
 
 type Config struct {
@@ -161,6 +162,73 @@ func download(c web.C, w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 }
 
+// compare
+func compare(c web.C, w http.ResponseWriter, r *http.Request) {
+	// get config
+	var config Config
+	_, err := toml.DecodeFile("./conf/config.tml", &config)
+	if err != nil {
+		panic(err)
+	}
+
+	jsonStrings := []string{}
+
+	for k, v := range config.Server {
+		fmt.Printf("Slave %d\n", k)
+		searchResultForm := r.FormValue("searchResult")
+		birthmark := r.FormValue("birthmark")
+
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+
+		url := "http://" + v.Host + ":" + v.Port + "/compare"
+		params := map[string]string{
+			"searchResult": searchResultForm,
+			"birthmark":    birthmark,
+		}
+		for key, val := range params {
+			_ = writer.WriteField(key, val)
+		}
+
+		err = writer.Close()
+		req, err := http.NewRequest("POST", url, body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		defer resp.Body.Close()
+
+		fmt.Println("before response")
+
+		// respose write
+		b, err := ioutil.ReadAll(resp.Body)
+		if err == nil {
+			fmt.Println("b")
+			fmt.Println(string(b))
+			// fmt.Fprintf(w, "%s\n", string(b))
+		}
+
+		// json get
+		var searchResult interface{}
+		fmt.Println("Json get")
+		fmt.Println([]byte(string(b)))
+		errr := json.Unmarshal([]byte(string(b)), &searchResult)
+		if errr != nil {
+			fmt.Println("error")
+		}
+		array := searchResult.([]interface{})
+
+		for i := 0; i < len(array); i++ {
+			json_str, _ := json.Marshal(array[i].(map[string]interface{}))
+			jsonStrings = append(jsonStrings, string(json_str))
+			fmt.Println(jsonStrings)
+		}
+		fmt.Fprintf(w, "[%s]\n", strings.Join(jsonStrings[:], ","))
+
+		break
+
+	}
+}
+
 func main() {
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 	goji.Get("/", index)
@@ -168,5 +236,6 @@ func main() {
 	goji.Post("/hello", hello_post)
 	goji.Post("/file", file)
 	goji.Post("/download", download)
+	goji.Post("/compare", compare)
 	goji.Serve()
 }

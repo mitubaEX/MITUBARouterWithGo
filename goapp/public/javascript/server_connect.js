@@ -54,6 +54,99 @@ $(function() {
                 columns: [
                     { data: 'postedClassFile' },
                     { data: 'resultClassFile' },
+                    { data: 'sim' },
+                    { data: 'jar' },
+                    { data: 'groupId' },
+                    { data: 'artifactId' },
+                    { data: 'version' }
+                ],
+                searching: false,
+                scrollY:        "300px",
+                scrollX:        true,
+                scrollCollapse: true,
+                paging:         false,
+                columnDefs: [
+                    { width: 200, targets: 0 }
+                ],
+                fixedColumns: true
+                // "scrollY":        "400px",
+                // "scrollCollapse": true,
+                // "paging":         false
+                //
+                // autoWidth: false,
+                // columnDefs: [
+                //     { targets: 1, width: '20%' }
+                // ]
+            });
+            return true;
+
+            // var tableHeaderRowCount = 1;
+            // var table = document.getElementById('searchResultTable');
+            // var rowCount = table.rows.length;
+            // for (var i = tableHeaderRowCount; i < rowCount; i++) {
+            //     table.deleteRow(tableHeaderRowCount);
+            // }
+            // var items = [];
+            // $.each(JSON.parse(res.toString()), function (key, val) {
+            //     items.push("<tr>");
+            //     items.push("<td id=''"+key+"''>"+val.postedClassFile+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.resultClassFile+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.jar+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.groupId+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.artifactId+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.version+"</td>");
+            //     items.push("<td id=''"+key+"''>"+val.sim+"</td>");
+            //     items.push("</tr>");
+            // });
+            // $("<tbody/>", {html: items.join("")}).appendTo("table");
+            // localStorage.setItem('searchResult', res.toString());
+            // document.getElementById('searchResult').value = res.toString();
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            console.log( 'ERROR', jqXHR, textStatus, errorThrown);
+        });
+        return false;
+    });
+
+
+});
+
+$(function() {
+    //  searchボタンが押された時
+    $('body').on('click', 'button[data-btn-type=compare]', function(e) {
+        console.log('click btn compare');
+        //  リクエストの下準備
+        //
+        var $searchResult = $('#searchResult');
+        var $birthmark = $('#birthmark');
+        var formData = new FormData();
+        formData.append($searchResult.attr('name'), $searchResult.val());
+        formData.append($birthmark.attr('name'), $birthmark.val());
+        console.log($searchResult.val());
+        console.log('compare');
+        $.ajax({
+            //  リクエストの内容
+            type: "POST",
+            url: "compare",
+            data: formData,
+            enctype: 'json',
+            processData: false,
+            contentType: false,
+        }).done(function( res ){
+            console.log( 'SUCCESS', res);
+            console.log( res.toString());
+            console.log(JSON.parse(res.toString()));
+            $('#searchResult').val(res.toString());
+            console.log($('#searchResult').val());
+
+            document.getElementById("searchResultZone").style.display="block";
+
+            table.destroy();
+
+            table = $('#searchResultTable').removeAttr('width').DataTable({
+                data: JSON.parse(res.toString()),
+                columns: [
+                    { data: 'postedClassFile' },
+                    { data: 'resultClassFile' },
                     { data: 'jar' },
                     { data: 'groupId' },
                     { data: 'artifactId' },
@@ -108,25 +201,4 @@ $(function() {
     });
 
 
-    //  downloadボタンが押された時
-    // $('body').on('click', 'button[data-btn-type=download]', function(e) {
-    //     console.log('click btn download');
-    //     //  リクエストの下準備
-    //     var searchResult = localStorage.getItem('searchResult');
-    //
-    //     $.ajax({
-    //         //  リクエストの内容
-    //         type: "POST",
-    //         url: "download",
-    //         data: searchResult,
-    //         enctype: 'text/plain',
-    //         processData: false,
-    //         contentType: false,
-    //     }).done(function( res ){
-    //         console.log( 'SUCCESS', res);
-    //     }).fail(function(jqXHR, textStatus, errorThrown){
-    //         console.log( 'ERROR', jqXHR, textStatus, errorThrown);
-    //     });
-    //     return false;
-    // });
 });
